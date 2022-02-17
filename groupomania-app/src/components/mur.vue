@@ -2,29 +2,27 @@
 <!--Mur-->
     <div id="mur">
       <div class='bienvenue' >
-        <h2>Bienvenue sur ton forum d'entreprise !</h2>
+        <h2>Bienvenue sur ton forum d'entreprise {{user.name}}!</h2>
         <router-link to="/">
           <button v-on:click.prevent='logout()' type="button" class="btn btn-secondary " > Se déconnecter !</button>
         </router-link>
       </div>
-      <form>
-        <div class="form-group col-lg-3 col-sm-6">
-          <input v-model='name' type='name' placeholder="Votre pseudo ! " size="50" required aria-label="Email de connection"> <br>
-        </div>
+      <form method="POST">
+        
         <div class="form-group col-lg-3 col-sm-6">
           <input v-model='title' type='title' placeholder="Le titre de votre post !" size="50" required aria-label="Email de connection"> <br>
         </div>
         <div class="form-group col-lg-3 col-sm-6">
           <input v-model='content' type='content' placeholder="Dites nous tous !" size="50" required aria-label="Email de connection"> <br>
         </div>
-        <router-link to="/forum">
+        
           <button v-on:click.prevent='newPost()' type="button" class="btn btn-secondary" id='login'>Partager votre post !</button>
-        </router-link>
+        
       </form>
       <div class="getPost">
         <h3 id="post">Voici les derniers posts de notre communauté :</h3>
         <div id="postdiv" class="post"  v-for="post in post" :key="post.id">
-          <p class="name">{{post.name}}</p>
+          <p class="name">{{post.nameCreater}}</p>
           <p class="title">{{post.title}}</p>  
           <p class="content">{{post.content}}</p>
           <p class="date">{{post.dateAdd}}</p>
@@ -66,7 +64,7 @@ export default {
            dateAdd:'',
            user:'',
            id:'',
-           name:'',
+           token:'',
         }
     },
     mounted() {
@@ -79,6 +77,27 @@ export default {
     },
     methods : {
       newPost: function () {
+        let token =localStorage.getItem('token');
+        axios.post('http://localhost:8080/api/posts/new',
+        {
+          title: this.title,
+          content:this.content,
+        } ,{
+                   headers: {
+                    'content-type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                  }
+         }
+        ).then(() => { 
+                  console.log('message envoyé !') 
+                  this.post ==="";
+                  alert('Votre message a bien été envoyé !')
+                  location.reload(true);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    console.log("Votre message n'a pas pu etre posté !");
+                })
         
 
     },
@@ -86,6 +105,7 @@ export default {
       logout: function () {
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
+      localStorage.removeItem('name');
       this.$router.push('/');
       },
       

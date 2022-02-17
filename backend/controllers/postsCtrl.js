@@ -1,3 +1,4 @@
+
 //Imports
 const { cookie } = require('express/lib/response');
 const models = require('../models');
@@ -19,15 +20,17 @@ module.exports = {
         //getting auth header.
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
+        
 
         //params.
-        const name = req.body.name;
+        
         const title = req.body.title;
         const content = req.body.content;
         const dateAdd = Date.now();
         const media = req.body.media;
+        // const name = localStorage.getItem('name');
         const post = {
-            name: name,
+            // name: name,
             title: title,
             content: content,
             userId: userId,
@@ -63,8 +66,6 @@ module.exports = {
                 error: error
             })
         });
-        
-
     },
 
     getOnePost: function (req, res) {

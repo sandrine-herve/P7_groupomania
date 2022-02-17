@@ -3,7 +3,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post',{
     userId: DataTypes.INTEGER,
-    name: DataTypes.STRING,
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     dateAdd: DataTypes.DATE,

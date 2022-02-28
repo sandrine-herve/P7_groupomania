@@ -21,20 +21,20 @@ module.exports = {
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
         
+        
 
         //params.
-        
+
         const title = req.body.title;
         const content = req.body.content;
         const dateAdd = Date.now();
-        const media = req.body.media;
-        // const name = localStorage.getItem('name');
-        const post = {
-            // name: name,
+        const url = req.protocol + '://' +req.get('host');
+        
+        const post = {   
             title: title,
             content: content,
             userId: userId,
-            media: media,
+            media: url + '/images/' + req.file.filename ,
             dateAdd: dateAdd
         }
 
@@ -69,12 +69,13 @@ module.exports = {
     },
 
     getOnePost: function (req, res) {
-        const id =req.body.id;
         models.Post.findOne({
-            where: {id},
+            // _id:req.params.id
+            where: {id: req.body.id},
             order: [['id', 'DESC']], 
         }).then(result => {
             res.status(200).json(result);
+            console.log(result) 
         }).catch(error => {
             res.status(500).json({
                 message: 'Something went wrong'
@@ -100,17 +101,17 @@ module.exports = {
 
         models.Post.findOne({ where: { id: req.body.id }})
         .then(post => {
-            if ( media != null) {
-                const filename = post.media.split('/images/')[1];
-                console.log(filename)
-                fs.unlink(`images/${filename}`,() => {
-                    models.Post.destroy({
-                        where: { id: req.body.id }
-                    })
-                    .then(() => res.status(200).json({ message: 'Post deleted !'}))
-                    .catch( error => res.status(404).json({ message: 'Post not deleted !'})); 
-                });
-             }
+            // if ( media != null) {
+            //     const filename = post.media.split('/images/')[1];
+            //     console.log(filename)
+            //     fs.unlink(`images/${filename}`,() => {
+            //         models.Post.destroy({
+            //             where: { id: req.body.id }
+            //         })
+            //         .then(() => res.status(200).json({ message: 'Post deleted !'}))
+            //         .catch( error => res.status(404).json({ message: 'Post not deleted !'})); 
+            //     });
+            //  }
              models.Post.destroy({ where: {id: req.body.id }})
             .then(Post => res.json({
                 error: false,
@@ -125,6 +126,34 @@ module.exports = {
 
 
         
-        }
+    },
+    updatePost: function(req, res) {
+        //getting auth header.
+        const headerAuth = req.headers['authorization'];
+        const userId = jwtUtils.getUserId(headerAuth);
+        const id = req.body.id;
+
+        models.Post.findOne({ where: {id: id}})
+        .then(post => {
+            if(userId === post.userId){
+                const updatePost = {
+                    title: req.body.title,
+                    content: req.body.content,
+                }
+                // if (req.file) {
+                //     updatePost.image = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+                //     const filename = post.image.split('/images/')[1];
+                //     fs.unlinkSync(`images/${filename}`)
+                //     console.log(post.image);
+                // }
+                models.Post.update(updatePost, {where: {id: id}})
+                .then(()=>res.status(200).json({ message: 'Post modifié !'}))
+                .catch(error => res.status(400).json({ error}))
+            } else {
+                return res.status(403).json({'error':'Unauthorize'})
+            }
+        })
+        .catch((error) => res.status(500).json({ error }));
+    }
     
 }

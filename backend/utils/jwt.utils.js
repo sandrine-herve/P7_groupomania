@@ -8,7 +8,8 @@ module.exports = {
    generateTokenForUser: function(userData) {
        return jwt.sign({
            userId: userData.id,
-           isAdmin: userData.isAdmin
+           isAdmin: userData.isAdmin,
+           
        },
        JWT_SIGN_SECRET,
        { expiresIn: '24h' }
@@ -29,5 +30,6 @@ module.exports = {
          } catch(err) { }
      }
      return userId;
-    }
+    },
+
 };

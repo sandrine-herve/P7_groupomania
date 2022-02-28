@@ -89,6 +89,7 @@ module.exports = {
                 'userId': userFound.id,
                 'token': jwtUtils.generateTokenForUser(userFound),
                 'name': userFound.name,
+                'isAdmin': userFound.isAdmin,
               });
             } else {
               return res.status(403).json({ 'error': 'invalid password'});

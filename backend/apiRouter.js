@@ -23,7 +23,7 @@ exports.router = (function() {
     apiRouter.route('/posts/getOne').get(postsCtrl.getOnePost);
     apiRouter.route('/posts/getAll').get(postsCtrl.getAllPost);
     apiRouter.route('/posts/delete').delete(postsCtrl.deletePost);
-    //apiRouter.route('/posts/update').update(postsCtrl.updatePost);
+    apiRouter.route('/posts/update').put(postsCtrl.updatePost);
     
     //Comments routes
     apiRouter.route('/comments/new').post( commentsCtrl.createComment);

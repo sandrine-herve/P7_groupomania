@@ -3,6 +3,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post',{
     userId: DataTypes.INTEGER,
+    // name: DataTypes.STRING,
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     dateAdd: DataTypes.DATE,
@@ -16,8 +17,8 @@ module.exports = (sequelize, DataTypes) => {
         models.Post.hasMany(models.Likes);
         models.Post.belongsTo(models.User, {
           foreignKey: 'userId'
-          
         })
+        
     },
 
   } 

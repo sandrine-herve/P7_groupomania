@@ -11,7 +11,7 @@
           <button v-on:click.prevent='login()' type="button" class="btn btn-secondary" id='login'>Se connecter</button>
           </router-link>
           <router-link to="/signup">
-          <p>Pas encore inscrit ? <a href="/signup">Inscrivez-vous</a></p>
+          <p><a href="/signup">Pas encore inscrit ? C'est par ici !</a></p>
           </router-link>
       </form> 
   </div>
@@ -37,6 +37,8 @@ export default {
           email:'',
           password:'',
           userId:'',
+          isAdmin:'',
+          name:'',
       }
   },
   methods: {
@@ -48,6 +50,7 @@ export default {
                   email: this.email,
                   password: this.password,
                   name: this.name,
+                  isAdmin: this.isAdmin,
               },
               {
                   headers: {
@@ -58,6 +61,7 @@ export default {
                   localStorage.setItem("token",response.data.token);
                   localStorage.setItem("userId", response.data.userId);
                   localStorage.setItem("name", response.data.name);
+                  localStorage.setItem("isAdmin",response.data.isAdmin);
                   this.$router.push('/forum')
                 });
 

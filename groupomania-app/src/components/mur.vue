@@ -29,7 +29,7 @@
             <p class="content">{{post.content}}</p>
             <p class="date">{{post.dateAdd}}</p>
             <p class='id'>{{post.id}}</p>
-              <button @click="getOne(id)" v-if="post.userId == userId"  type="button" class="btn btn-success btn-sm" :id="post.id"> Modifier </button> 
+              <button @click="getOne()" v-if="post.userId == userId"  type="button" class="btn btn-success btn-sm" :id="post.id"> Modifier </button> 
               <button @click="DeletePost()" v-if="post.userId == userId || isAdmin == true" type="button" class="btn btn-danger btn-sm"> Supprimer </button>
               <button @click="showForm()" type="button" class="btn btn-info btn-sm"> Répondre </button>
               <button @click ="showComment()" type="button" class="btn btn-warning btn-sm"> Voir les commentaires </button>
@@ -95,11 +95,11 @@ export default {
         })
         .catch(error => console.log(error));
     },
-    // watch:{
-		// 	'$route' (to) {
-		// 		this.id = to.params.id
-		// 	}
-		// },
+    watch:{
+		'$route' (to) {
+		this.id = to.params.id
+		}
+		},
     methods : {
       showComment: function() {
         let show_comment = document.getElementById('show_comment');
@@ -124,15 +124,23 @@ export default {
   }
       },
      getOne: function() {
-    
-    
-     axios.get('http://localhost:8080/api/posts/getOne')
-     },
+       
+      axios.get(`http://localhost:8080/api/posts/getOne/${this.id}`)
+      .then (response =>{
+      localStorage.setItem('post',JSON.stringify(this.post)),
+      this.$router.push('/update')
+      console.log(this.post)
+      console.log(response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+      },
 
       DeletePost: function() {
         let token =localStorage.getItem('token')
         if(confirm('Voulez vous vraiment supprimer le message ?')){
-        axios.delete('http://localhost:8080/api/posts/delete',
+        axios.delete(`http://localhost:8080/api/posts/delete`,
         { id: this.id },
         {
           headers: {

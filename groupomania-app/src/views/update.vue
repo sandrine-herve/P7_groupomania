@@ -5,12 +5,13 @@
         <button type="button" class="btn btn-success" id="return"> Forum </button>
       </router-link>
 
+      <!-- afficher le post sélectionné -->
       <!-- <div class="posted">
             <p class="name">{{post.userId}}</p>  
             <p class="title">{{post.title}}</p>  
             <p class="content">{{post.content}}</p>
             <p class="date">{{post.dateAdd}}</p>
-      </div>  -->
+      </div>   -->
     
       <form method="POST">
         <div class="form-group col-lg-3 col-sm-6">
@@ -51,6 +52,9 @@ export default {
            
            
         }
+    },
+    mounted() {
+        
     },
     watch:{
 			'$route' (to) {

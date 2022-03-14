@@ -24,23 +24,24 @@ module.exports = {
         
 
         //params.
-
+        const id = req.body.id;
         const title = req.body.title;
         const content = req.body.content;
         const dateAdd = Date.now();
         const url = req.protocol + '://' +req.get('host');
         
-        const post = {   
+        const post = { 
+            id: id, 
             title: title,
             content: content,
             userId: userId,
-            media: url + '/images/' + req.file.filename ,
+            // media: url + '/images/' + req.file.filename ,
             dateAdd: dateAdd
         }
 
-        if (media) {
-            post.media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
-        }
+        // if (media) {
+        //     post.media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+        // }
 
         if (title == null || content == null) {
             return res.status(400).json({'error': 'missing parameters'});
@@ -69,18 +70,12 @@ module.exports = {
     },
 
     getOnePost: function (req, res) {
+        
         models.Post.findOne({
-            // _id:req.params.id
-            where: {id: req.body.id},
-            order: [['id', 'DESC']], 
-        }).then(result => {
-            res.status(200).json(result);
-            console.log(result) 
-        }).catch(error => {
-            res.status(500).json({
-                message: 'Something went wrong'
-            });
-        });
+         where : { id: req.params.id },
+        })
+        .then(post => {res.status(200).json(post)})
+        .catch(error => res.status(404).json({ error }))
     },
 
     getAllPost: function (req, res) {
@@ -99,7 +94,9 @@ module.exports = {
 
     deletePost: function(req, res) {
 
-        models.Post.findOne({ where: { id: req.body.id }})
+        models.Post.findOne({ 
+           where : { id: req.params.id },
+        })
         .then(post => {
             // if ( media != null) {
             //     const filename = post.media.split('/images/')[1];
@@ -112,7 +109,7 @@ module.exports = {
             //         .catch( error => res.status(404).json({ message: 'Post not deleted !'})); 
             //     });
             //  }
-             models.Post.destroy({ where: {id: req.body.id }})
+             models.Post.destroy({ where: {id: req.params.id }})
             .then(Post => res.json({
                 error: false,
                 message: 'Post deleted'

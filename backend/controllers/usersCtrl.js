@@ -5,7 +5,7 @@ const user = require('../models/user.model.js');
 const models = require('../models');
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_REGEX = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,20}$/;
-const asyncLib = require('async');//pour l'utilisation des waterfall.
+// const asyncLib = require('async');//pour l'utilisation des waterfall.
 
 //Routes
 module.exports = {

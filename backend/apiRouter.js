@@ -19,10 +19,10 @@ exports.router = (function() {
     apiRouter.route('/users/logout').get(usersCtrl.logout);
 
     //Posts routes
-    apiRouter.route('/posts/new').post(postsCtrl.createPost);
-    apiRouter.route('/posts/getOne').get(postsCtrl.getOnePost);
+    apiRouter.route('/posts/new').post(multer,postsCtrl.createPost);
+    apiRouter.route('/posts/getOne').get(multer,postsCtrl.getOnePost);
     apiRouter.route('/posts/getAll').get(postsCtrl.getAllPost);
-    apiRouter.route('/posts/delete').delete(postsCtrl.deletePost);
+    apiRouter.route('/posts/delete').delete(multer,postsCtrl.deletePost);
     apiRouter.route('/posts/update').put(postsCtrl.updatePost);
     
     //Comments routes

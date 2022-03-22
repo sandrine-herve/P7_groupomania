@@ -15,6 +15,16 @@
         <div class="form-group col-lg-3 col-sm-6">
           <input v-model='content' type='text' placeholder="Dites nous tout !" size="50" required aria-label="Email de connection"> <br>
         </div>
+        <div>
+           <div v-if="media">
+              <img :src="media" alt="Image du post" class="file">
+            </div>
+            <div class="form-group col-lg-3 col-sm-6">
+              <input type="file" accept=".jpeg, .jpg, .png, .webp, .gif" v-on:change="uploadFile" id="file" class="input-file" aria-label="Image du post">
+              <label v-if="!media" for="file" class="label-file" aria-label="Choisir une photo pour ce post"></label>
+              <button v-else @click="deletefile()" class="label-file btnDelete" aria-label="Supprimer cette photo du post"><i class="far fa-trash-alt"></i> Supprimer image</button>
+            </div>
+        </div> 
         
           <button v-on:click.prevent='newPost()' type="button" class="btn btn-secondary" id='login'>Partager votre post !</button>
         
@@ -24,15 +34,31 @@
         <h3 >Voici les derniers posts de notre communauté :</h3>
         <div class="posted">
           <div id="postdiv" class="post"  v-for="post in posts" :key="post.id">
-            <!-- <p class="name">{{post.userId}}</p>  -->
+            <p class="name">{{post.user}}</p> 
             <p class="title">{{post.title}}</p>  
             <p class="content">{{post.content}}</p>
             <p class="date">{{post.dateAdd}}</p>
+            <p class="media">{{post.media}}</p>
             <p class='id'>{{post.id}}</p>
-              <button @click="getOne()" v-if="post.userId == userId"  type="button" class="btn btn-success btn-sm" :id="post.id"> Modifier </button> 
+              <button @click="showUpdate()" v-if="post.userId == userId"  type="button" class="btn btn-success btn-sm" :id="post.id"> Modifier </button> 
               <button @click="DeletePost()" v-if="post.userId == userId || isAdmin == true" type="button" class="btn btn-danger btn-sm"> Supprimer </button>
               <button @click="showForm()" type="button" class="btn btn-info btn-sm"> Répondre </button>
               <button @click ="showComment()" type="button" class="btn btn-warning btn-sm"> Voir les commentaires </button>
+
+              <!-- Partie modif post -->
+              <div v-show ='showUpdate' id='show_update'>
+                <form method="POST">
+                  <div class="form-group col-lg-3 col-sm-6">
+                    <input v-model='title' type='title' placeholder="Modidiez votre titre !" size="50" required aria-label="Email de connection"> <br>
+                  </div>
+                  <div class="form-group col-lg-3 col-sm-6">
+                    <input v-model='content' type='text' placeholder="Modidiez votre post !" size="50" required aria-label="Email de connection"> <br>
+                  </div>
+        
+                  <button @click="updatePost()" type="button" class="btn btn-secondary" id='login'>Modifier votre post !</button>
+                </form>
+              </div>
+              <!-- Partie voir les posts -->
               <div v-show ='showComment' id='show_comment'>
                 <div id="commentdiv" class="comment" v-for="comment in comments" :key="comment.id">
                   
@@ -41,7 +67,7 @@
                   
                 </div>
               </div>
-
+              <!-- Partie réponse posts -->
               <div v-show ='showForm' class='form' id='form_resp'>
                 <form>
                   <input type="text" id="comment" name="comment" placeholder="Laisse ton commentaire !" >
@@ -83,6 +109,8 @@ export default {
            id:'',
            token:'',
            userId: JSON.parse(this.$localStorage.get('userId')),
+           id_param: this.$route.params.id,
+           media:'',
            
            
         }
@@ -101,6 +129,50 @@ export default {
 		}
 		},
     methods : {
+      updatePost: function () {
+        let token =localStorage.getItem('token');
+        axios.put('http://localhost:8080/api/posts/update',
+        {
+          id: this.id ,
+          title: this.title,
+          content:this.content,
+        },{
+                   headers: {
+                    'content-type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                  }
+         }
+        ).then(()=>{
+            console.log('post modifié !')
+            this.post ==="";
+            alert('Votre message a bien été modifié !')
+            // location.reload(true);
+            this.$router.push('/forum')
+
+        })
+        .catch((error) => {
+                    console.log(error);
+                    console.log("Votre message n'a pas pu etre modifié !");
+                });
+      },
+      uploadFile(e) {
+            if (e.target.files) {
+                let reader = new FileReader()
+                reader.onload = (event) => {
+                    this.preview = event.target.result
+                    this.image = event.target.result
+                }
+                reader.readAsDataURL(e.target.files[0])
+            }
+        },
+         showUpdate: function() {
+        let show_update = document.getElementById('show_update');
+        if(getComputedStyle(show_update).display != "none"){
+        show_update.style.display = "none"
+        } else {
+           show_update.style.display = "block"   
+          }
+      },
       showComment: function() {
         let show_comment = document.getElementById('show_comment');
         if(getComputedStyle(show_comment).display != "none"){
@@ -121,21 +193,9 @@ export default {
         form_resp.style.display = "none"
         } else {
             form_resp.style.display = "block"   
-  }
+          }
       },
-     getOne: function() {
-       
-      axios.get(`http://localhost:8080/api/posts/getOne/${this.id}`)
-      .then (response =>{
-      localStorage.setItem('post',JSON.stringify(this.post)),
-      this.$router.push('/update')
-      console.log(this.post)
-      console.log(response)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      },
+    
 
       DeletePost: function() {
         let token =localStorage.getItem('token')
@@ -196,12 +256,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#show_comment{
+.media {
+  height: 20%;
+  width: 80% ;
+}
+#show_comment, #show_update,#form_resp{
   display: none;
 }
-#form_resp {
-  display: none;
-}
+
 .form-group {
   margin-left: 25%;
   margin-top: 50px;

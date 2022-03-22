@@ -49,7 +49,7 @@ export default {
            id:this.$route.params.id,
            token:'',
            userId: JSON.parse(this.$localStorage.get('userId')),
-           
+           id_param: this.$route.params.id,
            
         }
     },

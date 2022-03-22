@@ -2,11 +2,12 @@
 //Imports
 const { cookie } = require('express/lib/response');
 const models = require('../models');
+
 const jwtUtils = require('../utils/jwt.utils');
-const asyncLib = require('async');
+
 const fs = require('fs');
 const { NOW } = require('sequelize');
-const multerConfig = require('../utils/multer-config');
+
 
 
 
@@ -20,28 +21,20 @@ module.exports = {
         //getting auth header.
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
-        
-        
-
+     
         //params.
-        const id = req.body.id;
         const title = req.body.title;
         const content = req.body.content;
-        const dateAdd = Date.now();
-        const url = req.protocol + '://' +req.get('host');
-        
-        const post = { 
-            id: id, 
-            title: title,
-            content: content,
-            userId: userId,
-            // media: url + '/images/' + req.file.filename ,
-            dateAdd: dateAdd
-        }
+        const mediaPost = "";
+        if (req.file) { 
+        mediaPost = `${req.protocol}://${req.get("host")}/images/${req.file.filename}` 
+    }
+        // const dateAdd = Date.now();
+        // const media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
 
-        // if (media) {
-        //     post.media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
-        // }
+    //    if (req.file) {
+    //     post.media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+    //     }
 
         if (title == null || content == null) {
             return res.status(400).json({'error': 'missing parameters'});
@@ -50,14 +43,19 @@ module.exports = {
         if (title.length <=  TITLE_LIMIT || content.length <= CONTENT_LIMIT ) {
             return res.status(400).json({'error': 'invalid parameters'});
         }
-
-        console.log(post);
         
-        models.Post.create(post)
+        models.Post.create({
+            title: req.body.title,
+            content : req.body.content,
+            media :  mediaPost,
+            userId: userId,
+            dateAdd: Date.now()
+        })
         .then(result => {
             res.status(201).json({
                 message:'Post created successfully !',
-                post: result
+                post: result,
+                
             });
         })
 
@@ -68,20 +66,33 @@ module.exports = {
             })
         });
     },
-
     getOnePost: function (req, res) {
-        
+        const id =req.body.id;
         models.Post.findOne({
-         where : { id: req.params.id },
-        })
-        .then(post => {res.status(200).json(post)})
-        .catch(error => res.status(404).json({ error }))
+            where: {id},
+            order: [['id', 'DESC']], 
+        }).then(result => {
+            res.status(200).json(result);
+        }).catch(error => {
+            res.status(500).json({
+                message: 'Something went wrong'
+            });
+        });
     },
+
+    // getOnePost: function (req, res) {
+        
+    //     models.Post.findOne({
+    //         where : { id: req.params.id },
+    //        })
+    //        .then(post => {res.status(200).json(post)})
+    //        .catch(error => res.status(404).json({ error }))
+    // },
 
     getAllPost: function (req, res) {
         models.Post.findAll({
            order:[[
-                'createdAt', 'DESC'
+                'id', 'DESC'
            ]]
             }).then(result => {
             res.status(200).json(result);
@@ -124,6 +135,7 @@ module.exports = {
 
         
     },
+
     updatePost: function(req, res) {
         //getting auth header.
         const headerAuth = req.headers['authorization'];
@@ -152,5 +164,6 @@ module.exports = {
         })
         .catch((error) => res.status(500).json({ error }));
     }
+       
     
 }

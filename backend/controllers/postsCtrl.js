@@ -104,35 +104,19 @@ module.exports = {
     },
 
     deletePost: function(req, res) {
+        const headerAuth = req.headers['authorization'];
+        const userId = jwtUtils.getUserId(headerAuth);
 
-        models.Post.findOne({ 
-           where : { id: req.params.id },
+        models.Post.findOne({
+            where: {id: req.body.id},
         })
-        .then(post => {
-            // if ( media != null) {
-            //     const filename = post.media.split('/images/')[1];
-            //     console.log(filename)
-            //     fs.unlink(`images/${filename}`,() => {
-            //         models.Post.destroy({
-            //             where: { id: req.body.id }
-            //         })
-            //         .then(() => res.status(200).json({ message: 'Post deleted !'}))
-            //         .catch( error => res.status(404).json({ message: 'Post not deleted !'})); 
-            //     });
-            //  }
-             models.Post.destroy({ where: {id: req.params.id }})
-            .then(Post => res.json({
-                error: false,
-                message: 'Post deleted'
-            }))
-            .catch(error => res.json({
-                error: true,
-                 error: error
-            }));
-        })
-        .catch( error => res.status(500).json({message: 'error !'}));
-
-
+        .then( (post) => {
+            post.destroy()
+            .then(()=> { res.status(200).json({ message: "Post supprimé !"})})
+            .catch((error)=> { res.status(400).json({ error: error, message:"Le post n'a pas pu être supprimé !"})})
+        }
+        )
+        .catch((error) => {res.status(400).json({ error: error, message: "Une erreur est survenue" })});
         
     },
 

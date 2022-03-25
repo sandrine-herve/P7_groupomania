@@ -46,7 +46,7 @@ module.exports = {
         models.Post.create({
             title: title,
             content : content,
-            media : mediaPostcont,
+            media : mediaPost,
             userId: userId,
             dateAdd: Date.now()
         })

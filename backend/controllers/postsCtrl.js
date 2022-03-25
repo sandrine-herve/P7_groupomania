@@ -25,10 +25,9 @@ module.exports = {
         //params.
         const title = req.body.title;
         const content = req.body.content;
-        const mediaPost = "";
-        if (req.file) { 
-        mediaPost = `${req.protocol}://${req.get("host")}/images/${req.file.filename}` 
-    }
+        const mediaPost = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` :  ""; 
+        
+      
         // const dateAdd = Date.now();
         // const media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
 
@@ -45,9 +44,9 @@ module.exports = {
         }
         
         models.Post.create({
-            title: req.body.title,
-            content : req.body.content,
-            media :  mediaPost,
+            title: title,
+            content : content,
+            media : mediaPostcont,
             userId: userId,
             dateAdd: Date.now()
         })
@@ -67,9 +66,9 @@ module.exports = {
         });
     },
     getOnePost: function (req, res) {
-        const id =req.body.id;
+        
         models.Post.findOne({
-            where: {id},
+            where: { id: req.params.id },
             order: [['id', 'DESC']], 
         }).then(result => {
             res.status(200).json(result);
@@ -79,15 +78,6 @@ module.exports = {
             });
         });
     },
-
-    // getOnePost: function (req, res) {
-        
-    //     models.Post.findOne({
-    //         where : { id: req.params.id },
-    //        })
-    //        .then(post => {res.status(200).json(post)})
-    //        .catch(error => res.status(404).json({ error }))
-    // },
 
     getAllPost: function (req, res) {
         models.Post.findAll({
@@ -111,7 +101,7 @@ module.exports = {
             where: {id: req.body.id},
         })
         .then( (post) => {
-            post.destroy()
+            models.Post.destroy()
             .then(()=> { res.status(200).json({ message: "Post supprimé !"})})
             .catch((error)=> { res.status(400).json({ error: error, message:"Le post n'a pas pu être supprimé !"})})
         }
@@ -126,7 +116,7 @@ module.exports = {
         const userId = jwtUtils.getUserId(headerAuth);
         const id = req.body.id;
 
-        models.Post.findOne({ where: {id: id}})
+        models.Post.findOne({ where: { id: req.params.id }})
         .then(post => {
             if(userId === post.userId){
                 const updatePost = {
@@ -139,7 +129,7 @@ module.exports = {
                 //     fs.unlinkSync(`images/${filename}`)
                 //     console.log(post.image);
                 // }
-                models.Post.update(updatePost, {where: {id: id}})
+                models.Post.update(updatePost, {where: { id: req.params.id }})
                 .then(()=>res.status(200).json({ message: 'Post modifié !'}))
                 .catch(error => res.status(400).json({ error}))
             } else {

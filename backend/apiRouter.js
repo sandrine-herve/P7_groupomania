@@ -21,7 +21,7 @@ exports.router = (function() {
     //Posts routes
     apiRouter.route('/posts/new').post(multer,postsCtrl.createPost);
     apiRouter.route('/posts/getOne').get(multer,postsCtrl.getOnePost);
-    apiRouter.route('/posts/getAll').get(postsCtrl.getAllPost);
+    apiRouter.route('/posts/getAll').get(multer,postsCtrl.getAllPost);
     apiRouter.route('/posts/delete').delete(multer,postsCtrl.deletePost);
     apiRouter.route('/posts/update').put(postsCtrl.updatePost);
     

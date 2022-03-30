@@ -7,6 +7,8 @@
           <button v-on:click.prevent='logout()' type="button" class="btn btn-secondary " > Se déconnecter !</button>
         </router-link>
       </div>
+
+      <!-- Creation d'un nouveau post -->
       <form method="POST" ENCTYPE="multipart/form-data">
         
         <div class="form-group col-lg-3 col-sm-6">
@@ -16,21 +18,26 @@
           <input v-model='content' type='text' placeholder="Dites nous tout !" size="50" required aria-label="Contenu du post"> <br>
         </div>
         <div>
+
            <div v-if="media">
               <img :src="media" alt="Image du post" class="file">
             </div>
-            <div class="form-group col-lg-3 col-sm-6">
-              <input type="hidden" name="MAX_FILE_SIZE" value="250000" />
+             <div class="form-group col-lg-3 col-sm-6">
+              <div class="form-group col-lg-3 col-sm-6">
               <input type="file" accept=".jpeg, .jpg, .png, .webp, .gif" v-on:change="uploadFile" id="file" class="input-file" aria-label="Image du post">
               <label v-if="!media" for="file" class="label-file" aria-label="Choisir une photo pour ce post"></label>
               <!-- <button v-else @click="deletefile()" class="label-file btnDelete" aria-label="Supprimer cette photo du post"><i class="far fa-trash-alt"></i> Supprimer image</button> -->
             </div>
+            </div>  
         </div> 
         
-          <button v-on:click.prevent='newPost()' type="button" class="btn btn-secondary" id='login'>Partager votre post !</button>
+          <button v-on:click='newPost()' type="button" class="btn btn-secondary" id='login'>Partager votre post !</button>
         
       </form>
-      
+      <!--  -->
+
+
+      <!-- Les posts -->
       <div class="forum">
         <h3 >Voici les derniers posts de notre communauté :</h3>
         <div class="posted">
@@ -39,7 +46,8 @@
             <p class="title">{{post.title}}</p>  
             <p class="content">{{post.content}}</p>
             <p class="date">{{post.dateAdd}}</p>
-            <p class="media">{{post.media}}</p>
+            
+             <!-- <img class="rounded-circle" width="45" :src="loadImage(post.media)" > -->
             <p class='id'>{{post.id}}</p>
               
               <button @click="getOne()" v-if="post.userId == userId"  type="button" class="btn btn-success btn-sm" :id="post.id"> Modifier </button> 
@@ -96,6 +104,7 @@ import axios from 'axios'
 
 export default {
     name:'mur',
+    img:'',
     data() {
       
         return {
@@ -132,6 +141,7 @@ export default {
 		}
 		},
     methods : {
+
       getOne: function () {
         let token =localStorage.getItem('token');
         const params = new URLSearchParams(window.location.search)
@@ -156,50 +166,83 @@ export default {
                     console.log("Votre message n'a pas pu etre récupéré!");
                 });
       },
-      // uploadFile(event) {
-      //   this.media = event.target.files[0];
 
-      //   const file = event.target.files[0];
-      //   // const fileName = event.target.files[0].name;
-      //   if(file) {
-      //     let reader = new FileReader();
-      //     reader.addEventListener('load', function(){
-      //       let imagePreview = document.getElementById('file');
-      //       imagePreview.setAttribute('src', this.result);
-      //     });
-      //     reader.readAsDataURL(file)
-      //     this.media = true;
-      //   } else {
-      //     this.media = false;
-      //   }
-      // },
-      uploadFile(e) {
-        this.media = e.target.files[0];
-        const file = e.target.files[0];
+      
 
-             if (file) {
-                 let reader = new FileReader();
-                 reader.addEventListener('load', function(){
-                   let preview = document.getElementById('file');
-                   preview.setAttribute("src",this.result);
-                 })
-                 reader.onload = (event) => {
-                     this.preview = event.target.result
-                     this.media = event.target.result
-                 }
-                 reader.readAsDataURL(file)
-             }
-         },
+     uploadFile(e) {
+      // this.img = e.target.files[0];
+       this.img = e.target.files[0];
+       const file = e.target.files[0];
+
+       if (file) {
+            let reader = new FileReader();
+            reader.addEventListener('load', function(){
+                let preview = document.getElementById('file');
+                preview.setAttribute("src",this.result);
+            })
+            reader.onload = (event) => {
+                this.preview = event.target.result
+                this.media = event.target.result
+            }
+            reader.readAsDataURL(file)
+                     
+                  
+         }
+      },
+     
+       newPost: function () {
+        let token =localStorage.getItem('token');
+        const post = {
+          title: this.title,
+          content: this.content,
+          //fileName: file,
+          img: this.media,
+          // img=base64
+          media: this.img.name,
+          // nom fichier url
+          userId: this.userId,
+          
+        }
+        axios.post('http://localhost:8080/api/posts/new',
+        post ,{
+                   headers: {
+                    
+                    'Authorization': 'Bearer ' + token
+                  }
+         }
+        ).then(() => { 
+                  console.log('post envoyé !')
+                  console.log( post )
+                  this.post ==="";
+                  alert('Votre message a bien été envoyé !')
+                  location.reload(true);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    console.log("Votre message n'a pas pu etre posté !");
+                })
 
 
-      //    showUpdate: function() {
-      //   let show_update = document.getElementById('show_update');
-      //   if(getComputedStyle(show_update).display != "none"){
-      //   show_update.style.display = "none"
-      //   } else {
-      //      show_update.style.display = "block"   
-      //     }
-      // },
+        var formData = new FormData()
+        formData.append('img', this.media)
+        // formData.append('media', this.media);
+        formData.append('post', JSON.stringify(post));
+        axios.post('http://localhost:8080/api/posts/image',formData,
+        {  
+                     headers : {
+                       'Content-Type': 'multipart/form-data',
+                       "Authorization": 'Bearer ' + token
+                       }
+        })
+         .then((resp) => {
+             console.log(resp)
+           })
+         .catch((err) => {
+             console.log(err.response)
+           })
+        
+    },
+
       showComment: function() {
         let show_comment = document.getElementById('show_comment');
         if(getComputedStyle(show_comment).display != "none"){
@@ -241,39 +284,18 @@ export default {
        } 
       },
 
-      newPost: function () {
-        let token =localStorage.getItem('token');
-        axios.post('http://localhost:8080/api/posts/new',
-        {
-          title: this.title,
-          content:this.content,
-          media: this.media,
-          userId: this.userId,
-        } ,{
-                   headers: {
-                    'content-type': 'application/json',
-                    'Authorization': 'Bearer ' + token
-                  }
-         }
-        ).then(() => { 
-                  console.log('post envoyé !')
-                  console.log( this.userId, this.title, this.content, this.media)
-                  this.post ==="";
-                  alert('Votre message a bien été envoyé !')
-                  location.reload(true);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    console.log("Votre message n'a pas pu etre posté !");
-                })
-        
+     
 
-    },
+   
+
+
+      
+    
       
       logout: function () {
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
-      localStorage.removeItem('name');
+      localStorage.removeItem('username');
       localStorage.removeItem('isAdmin');
       this.$router.push('/');
       },

@@ -11,16 +11,67 @@ const { NOW } = require('sequelize');
 
 
 
-//Constants
-const TITLE_LIMIT = 2;
-const CONTENT_LIMIT = 4;
+
 
 //Routes
 module.exports = {
+    // ne fonctionne pas mais j eveux uploader le nom du fichier dans mon dossier images
+    upload_image: function (req, res) {
+    // Deuxime fonction qui ne fonctionne pas 
+    //     const { filename, mimetype, size } = req.file;
+    // const filepath = req.file.path;
+    // models.Post.insert({
+    //     filename,
+    //     filepath,
+    //     mimetype,
+    //     size,
+    // })
+    //  .into('image_files')
+    //  .then(() => res.json({ success: true, filename }))
+    //  .catch(err => res.json({ success: false, message: 'upload failed', stack: err.stack })); 
+        
+    //  Premiere fonction mais qui n'insert pas de fichier dans le dossier images/ 
+        // try {
+            
+        //     if (req.file) {
+        //       // Utilise la librairie sharp pour redimensionner en 200x100, et renvoi la miniature dans un autre fichier dans le dossier de destination choisi dans le diskStorage 
+        //        sharp(req.file.path, { failOnError: false }) 
+        //       .resize({ width: 200, height: 100 })
+        //       .toFile(
+        //          path.resolve(req.file.destination + '/thumbnail', req.file.filename),
+        //         )
+
+        //         let filename = req.file.filename
+        //     }
+        //     res.send('Upload fini')
+        // } catch (e) {
+        //     res.status(400).send(e)
+        // }
+    },
+    // Image Upload Routes
+// app.post('/image', imageUpload.single('image'), (req, res) => {
+//     const { filename, mimetype, size } = req.file;
+//     const filepath = req.file.path;
+//    db
+//      .insert({
+//       filename,
+//       filepath,
+//       mimetype,
+//       size,
+//      })
+//      .into('image_files')
+//      .then(() => res.json({ success: true, filename }))
+//      .catch(err => res.json({ success: false, message: 'upload failed', stack: err.stack })); 
+//    });
+
     createPost: function(req, res) {
         //getting auth header.
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
+
+        //Constants
+        const TITLE_LIMIT = 2;
+        const CONTENT_LIMIT = 4;
      
         //params.
         const title = req.body.title;
@@ -45,8 +96,12 @@ module.exports = {
         
         models.Post.create({
             title: title,
-            content : content,
+            content: content,
             media : mediaPost,
+            // ok sur le front mais n'inscrit rien dans le fichier images et n'affiche pas le nom de l'image dans bdd.
+            // media : `${req.protocol}://${req.get("host")}/images/${req.file.filename}`, met une erreur not read properties of undefined filename
+            //  media: req.body.media, 
+            //  affiche sur la console back la base64 de l'image mais pas sur le front ko
             userId: userId,
             dateAdd: Date.now()
         })

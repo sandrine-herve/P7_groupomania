@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     dateAdd: DataTypes.DATE,
-    media: DataTypes.BOOLEAN,
+    media: DataTypes.STRING,
     likes: DataTypes.INTEGER,
   },{
     

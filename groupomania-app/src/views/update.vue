@@ -4,26 +4,30 @@
       <router-link to="/forum">
         <button type="button" class="btn btn-success" id="return"> Forum </button>
       </router-link>
-
-      <!-- afficher le post sélectionné -->
+             <!-- afficher le post sélectionné -->
       <!-- <div class="posted">
             <p class="name">{{post.userId}}</p>  
             <p class="title">{{post.title}}</p>  
             <p class="content">{{post.content}}</p>
             <p class="date">{{post.dateAdd}}</p>
       </div>   -->
-    
-      <form method="POST">
-        <div class="form-group col-lg-3 col-sm-6">
-          <input v-model='title' type='title' placeholder="Modidiez votre titre !" size="50" required aria-label="Email de connection"> <br>
-        </div>
-        <div class="form-group col-lg-3 col-sm-6">
-          <input v-model='content' type='text' placeholder="Modidiez votre post !" size="50" required aria-label="Email de connection"> <br>
-        </div>
-        
-          <button @click="updatePost()" type="button" class="btn btn-secondary" id='login'>Modifier votre post !</button>
 
-      </form>
+             <div id='show_update'>
+                <form method="POST">
+                  <div class="form-group col-lg-3 col-sm-6">
+                    <input v-model='title' type='title' placeholder="Modidiez votre titre !" size="50" required aria-label="titre du post a mofidier"> <br>
+                  </div>
+                  <div class="form-group col-lg-3 col-sm-6">
+                    <input v-model='content' type='text' placeholder="Modidiez votre post !" size="50" required aria-label="contenu du post a mofidier"> <br>
+                  </div>
+        
+                  <button @click="updatePost()" type="button" class="btn btn-secondary" id='login'>Modifier votre post !</button>
+                </form>
+              </div>
+
+     
+    
+      
   </div>    
 
 </template>

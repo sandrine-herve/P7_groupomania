@@ -31,7 +31,7 @@ module.exports = {
       },
       media: {
         allowNull: true,
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING
       },
       likes: {
         type: Sequelize.INTEGER

@@ -7,6 +7,9 @@ const commentsCtrl = require('./controllers/commentsCtrl');
 const multer = require('./utils/multer-config');
 const auth = require('./utils/auth')
 
+
+ 
+
 //Router
 exports.router = (function() {
     const apiRouter = express.Router();
@@ -19,6 +22,7 @@ exports.router = (function() {
     apiRouter.route('/users/logout').get(usersCtrl.logout);
 
     //Posts routes
+    apiRouter.route('/posts/image').post(multer,postsCtrl.upload_image);
     apiRouter.route('/posts/new').post(multer,postsCtrl.createPost);
     apiRouter.route('/posts/getOne').get(multer,postsCtrl.getOnePost);
     apiRouter.route('/posts/getAll').get(multer,postsCtrl.getAllPost);

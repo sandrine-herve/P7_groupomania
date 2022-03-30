@@ -1,6 +1,10 @@
 
 //Imports
 const { cookie } = require('express/lib/response');
+const express = require('express');
+//const fileUpload = require('express-fileupload');
+const app = express();
+
 const models = require('../models');
 
 const jwtUtils = require('../utils/jwt.utils');
@@ -74,8 +78,9 @@ module.exports = {
         const CONTENT_LIMIT = 4;
      
         //params.
-        const title = req.body.title;
-        const content = req.body.content;
+        const post = JSON.parse(req.body.post);
+        const title = post.title;
+        const content = post.content;
         const mediaPost = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` :  ""; 
         
       

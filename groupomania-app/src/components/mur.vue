@@ -24,7 +24,7 @@
             </div>
              <div class="form-group col-lg-3 col-sm-6">
               <div class="form-group col-lg-3 col-sm-6">
-              <input type="file" accept=".jpeg, .jpg, .png, .webp, .gif" v-on:change="uploadFile" id="file" class="input-file" aria-label="Image du post">
+              <input type="file" accept=".jpeg, .jpg, .png, .webp, .gif" v-on:change="uploadFile" id="file" class="input-file" name='image' aria-label="Image du post">
               <label v-if="!media" for="file" class="label-file" aria-label="Choisir une photo pour ce post"></label>
               <!-- <button v-else @click="deletefile()" class="label-file btnDelete" aria-label="Supprimer cette photo du post"><i class="far fa-trash-alt"></i> Supprimer image</button> -->
             </div>
@@ -196,18 +196,24 @@ export default {
           title: this.title,
           content: this.content,
           //fileName: file,
-          img: this.media,
+          //img: this.media,
           // img=base64
           media: this.img.name,
           // nom fichier url
           userId: this.userId,
           
         }
+
+        var formData = new FormData()
+        formData.append('media', this.img)
+        // formData.append('media', this.media);
+        formData.append('post', JSON.stringify(post));
+
         axios.post('http://localhost:8080/api/posts/new',
-        post ,{
-                   headers: {
+        formData ,{
+                  headers: {
                     
-                    'Authorization': 'Bearer ' + token
+                  'Authorization': 'Bearer ' + token
                   }
          }
         ).then(() => { 
@@ -223,23 +229,23 @@ export default {
                 })
 
 
-        var formData = new FormData()
-        formData.append('img', this.media)
-        // formData.append('media', this.media);
-        formData.append('post', JSON.stringify(post));
-        axios.post('http://localhost:8080/api/posts/image',formData,
-        {  
-                     headers : {
-                       'Content-Type': 'multipart/form-data',
-                       "Authorization": 'Bearer ' + token
-                       }
-        })
-         .then((resp) => {
-             console.log(resp)
-           })
-         .catch((err) => {
-             console.log(err.response)
-           })
+        // var formData = new FormData()
+        // formData.append('img', this.media)
+        // // formData.append('media', this.media);
+        // formData.append('post', JSON.stringify(post));
+        // axios.post('http://localhost:8080/api/posts/image',formData,
+        // {  
+        //              headers : {
+        //                'Content-Type': 'multipart/form-data',
+        //                "Authorization": 'Bearer ' + token
+        //                }
+        // })
+        //  .then((resp) => {
+        //      console.log(resp)
+        //    })
+        //  .catch((err) => {
+        //      console.log(err.response)
+        //    })
         
     },
 

@@ -1,10 +1,6 @@
 
 //Imports
 const { cookie } = require('express/lib/response');
-const express = require('express');
-//const fileUpload = require('express-fileupload');
-const app = express();
-
 const models = require('../models');
 
 const jwtUtils = require('../utils/jwt.utils');
@@ -81,8 +77,8 @@ module.exports = {
         const post = JSON.parse(req.body.post);
         const title = post.title;
         const content = post.content;
+        //const mediaPost = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` :  ""; 
         const mediaPost = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` :  ""; 
-        
       
         // const dateAdd = Date.now();
         // const media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
@@ -138,9 +134,25 @@ module.exports = {
             });
         });
     },
+    // exports.getAllFurniture = (req, res, next) => {
+    //     Furniture.find().then(
+    //       (furniture) => {
+    //         const mappedFurniture = furniture.map((item) => {
+    //           item.imageUrl = req.protocol + '://' + req.get('host') + '/images/' + item.imageUrl;
+    //           return item;
+    //         });
+    //         res.status(200).json(mappedFurniture);
+    //       }
+    //     ).catch(
+    //       () => {
+    //         res.status(500).send(new Error('Database error!'));
+    //       }
+    //     );
+    //   };
 
     getAllPost: function (req, res) {
         models.Post.findAll({
+            attributes: ["title",'content', 'media', 'userId', 'id', 'createdAt'],
            order:[[
                 'id', 'DESC'
            ]]

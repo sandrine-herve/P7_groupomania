@@ -47,7 +47,10 @@
             <p class="content">{{post.content}}</p>
             <p class="date">{{post.dateAdd}}</p>
             
-             <!-- <img class="rounded-circle" width="45" :src="loadImage(post.media)" > -->
+            <!-- <img  width="45" :src="post.media" > -->
+             <div class="form-group">
+               <img :src = post.media id="imgpost"  alt="Image du post" />
+             </div>
             <p class='id'>{{post.id}}</p>
               
               <button @click="getOne()" v-if="post.userId == userId"  type="button" class="btn btn-success btn-sm" :id="post.id"> Modifier </button> 
@@ -98,6 +101,8 @@
 
 <script>
 
+
+
 import axios from 'axios'
 
 
@@ -122,6 +127,7 @@ export default {
            token:'',
            media:'',
            id_param: this.$route.params.id,
+           mediaPost: '',
            
            
            
@@ -195,11 +201,8 @@ export default {
         const post = {
           title: this.title,
           content: this.content,
-          //fileName: file,
-          //img: this.media,
-          // img=base64
-          media: this.img.name,
           // nom fichier url
+          media: this.img.name,
           userId: this.userId,
           
         }

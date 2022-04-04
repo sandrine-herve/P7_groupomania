@@ -39,7 +39,7 @@ export default {
               password: this.password
           };
 
-          fetch("http://localhost:8080/api/users/signUp", {
+          fetch("http://localhost:8080/users/signUp", {
               method: "POST",
               headers: {
                   'Accept': 'application/json',

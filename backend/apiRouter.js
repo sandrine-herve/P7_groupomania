@@ -4,6 +4,7 @@ const { argsArePrimaryKeys } = require('sequelize/lib/utils');
 const usersCtrl = require('./controllers/usersCtrl');
 const postsCtrl = require('./controllers/postsCtrl');
 const commentsCtrl = require('./controllers/commentsCtrl');
+// const imageCtrl = require('./controllers/imageCtrl');
 const multer = require('./utils/multer-config');
 const auth = require('./utils/auth')
 
@@ -21,8 +22,10 @@ exports.router = (function() {
     apiRouter.route('/users/delete').delete(usersCtrl.deleteUser);
     apiRouter.route('/users/logout').get(usersCtrl.logout);
 
+    // Images routes
+    // apiRouter.route('/images').get(multer,imageCtrl.images);
+
     //Posts routes
-    apiRouter.route('/posts/image').post(multer,postsCtrl.upload_image);
     apiRouter.route('/posts/new').post(multer,postsCtrl.createPost);
     apiRouter.route('/posts/getOne').get(multer,postsCtrl.getOnePost);
     apiRouter.route('/posts/getAll').get(multer,postsCtrl.getAllPost);

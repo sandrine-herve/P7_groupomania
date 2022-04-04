@@ -15,54 +15,7 @@ const { NOW } = require('sequelize');
 
 //Routes
 module.exports = {
-    // ne fonctionne pas mais j eveux uploader le nom du fichier dans mon dossier images
-    upload_image: function (req, res) {
-    // Deuxime fonction qui ne fonctionne pas 
-    //     const { filename, mimetype, size } = req.file;
-    // const filepath = req.file.path;
-    // models.Post.insert({
-    //     filename,
-    //     filepath,
-    //     mimetype,
-    //     size,
-    // })
-    //  .into('image_files')
-    //  .then(() => res.json({ success: true, filename }))
-    //  .catch(err => res.json({ success: false, message: 'upload failed', stack: err.stack })); 
-        
-    //  Premiere fonction mais qui n'insert pas de fichier dans le dossier images/ 
-        // try {
-            
-        //     if (req.file) {
-        //       // Utilise la librairie sharp pour redimensionner en 200x100, et renvoi la miniature dans un autre fichier dans le dossier de destination choisi dans le diskStorage 
-        //        sharp(req.file.path, { failOnError: false }) 
-        //       .resize({ width: 200, height: 100 })
-        //       .toFile(
-        //          path.resolve(req.file.destination + '/thumbnail', req.file.filename),
-        //         )
 
-        //         let filename = req.file.filename
-        //     }
-        //     res.send('Upload fini')
-        // } catch (e) {
-        //     res.status(400).send(e)
-        // }
-    },
-    // Image Upload Routes
-// app.post('/image', imageUpload.single('image'), (req, res) => {
-//     const { filename, mimetype, size } = req.file;
-//     const filepath = req.file.path;
-//    db
-//      .insert({
-//       filename,
-//       filepath,
-//       mimetype,
-//       size,
-//      })
-//      .into('image_files')
-//      .then(() => res.json({ success: true, filename }))
-//      .catch(err => res.json({ success: false, message: 'upload failed', stack: err.stack })); 
-//    });
 
     createPost: function(req, res) {
         //getting auth header.
@@ -77,8 +30,8 @@ module.exports = {
         const post = JSON.parse(req.body.post);
         const title = post.title;
         const content = post.content;
-        //const mediaPost = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` :  ""; 
-        const mediaPost = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` :  ""; 
+        const mediaPost = req.file ? `${req.file.filename}` :  ""; 
+        // const mediaPost = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` :  ""; 
       
         // const dateAdd = Date.now();
         // const media = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
@@ -156,30 +109,26 @@ module.exports = {
            order:[[
                 'id', 'DESC'
            ]]
-            }).then(result => {
-            res.status(200).json(result);
-        }).catch(error => {
-            res.status(400).json({
-                message: 'Something went wrong'
+            })
+            .then(result => { res.status(200).json(result)})
+            .catch(error => { res.status(400).json({ message: 'Something went wrong'
             });
         });
     },
 
-    deletePost: function(req, res) {
-        const headerAuth = req.headers['authorization'];
-        const userId = jwtUtils.getUserId(headerAuth);
 
+    deletePost: function(req, res) {
+        
         models.Post.findOne({
             where: {id: req.body.id},
         })
         .then( (post) => {
-            models.Post.destroy()
+            post.destroy()
             .then(()=> { res.status(200).json({ message: "Post supprimé !"})})
             .catch((error)=> { res.status(400).json({ error: error, message:"Le post n'a pas pu être supprimé !"})})
         }
         )
         .catch((error) => {res.status(400).json({ error: error, message: "Une erreur est survenue" })});
-        
     },
 
     updatePost: function(req, res) {

@@ -46,10 +46,11 @@
             <p class="title">{{post.title}}</p>  
             <p class="content">{{post.content}}</p>
             <p class="date">{{post.dateAdd}}</p>
+            <p class="date">{{post.media}}</p>
             
             <!-- <img  width="45" :src="post.media" > -->
              <div class="form-group">
-               <img :src = post.media id="imgpost"  alt="Image du post" />
+               <img :src=" 'C:Users/sandr/Projets/P7/backend/images/' + post.media  "/>
              </div>
             <p class='id'>{{post.id}}</p>
               
@@ -134,7 +135,8 @@ export default {
         }
     },
     mounted() {
-        axios.get('http://localhost:8080/api/posts/getAll') 
+        
+        axios.get('http://localhost:8080/posts/getAll') 
         .then(response =>{
             console.log(response.data)
             this.posts = response.data
@@ -147,12 +149,13 @@ export default {
 		}
 		},
     methods : {
+      
 
       getOne: function () {
         let token =localStorage.getItem('token');
         const params = new URLSearchParams(window.location.search)
         const postId = params.get('id');
-        axios.get(`http://localhost:8080/api/posts/getOne/` + postId,
+        axios.get(`http://localhost:8080/posts/getOne/` + postId,
         {
                    headers: {
                     'Content-Type': 'multipart/form-data',
@@ -202,7 +205,8 @@ export default {
           title: this.title,
           content: this.content,
           // nom fichier url
-          media: this.img.name,
+          media: this.img,
+          // media: this.media,
           userId: this.userId,
           
         }
@@ -212,7 +216,7 @@ export default {
         // formData.append('media', this.media);
         formData.append('post', JSON.stringify(post));
 
-        axios.post('http://localhost:8080/api/posts/new',
+        axios.post('http://localhost:8080/posts/new',
         formData ,{
                   headers: {
                     
@@ -229,26 +233,8 @@ export default {
                 .catch((error) => {
                     console.log(error);
                     console.log("Votre message n'a pas pu etre posté !");
-                })
-
-
-        // var formData = new FormData()
-        // formData.append('img', this.media)
-        // // formData.append('media', this.media);
-        // formData.append('post', JSON.stringify(post));
-        // axios.post('http://localhost:8080/api/posts/image',formData,
-        // {  
-        //              headers : {
-        //                'Content-Type': 'multipart/form-data',
-        //                "Authorization": 'Bearer ' + token
-        //                }
-        // })
-        //  .then((resp) => {
-        //      console.log(resp)
-        //    })
-        //  .catch((err) => {
-        //      console.log(err.response)
-        //    })
+                });
+        
         
     },
 
@@ -258,7 +244,7 @@ export default {
         show_comment.style.display = "none"
         } else {
             show_comment.style.display = "block"
-            axios.get('http://localhost:8080/api/comments/getAll')
+            axios.get('http://localhost:8080/comments/getAll')
             .then(response => {
               console.log(response.data)
               this.comments =response.data
@@ -274,24 +260,30 @@ export default {
             form_resp.style.display = "block"   
           }
       },
-    
+       DeletePost: function() {
+          axios.delete('http://localhost:8080/posts/delete' )
+          .then(response => {
+              console.log(response.data)
+              this.comments =response.data
+            })
+            .catch(error => console.log(error));
+       },
 
-      DeletePost: function() {
-        let token =localStorage.getItem('token')
-        if(confirm('Voulez vous vraiment supprimer le message ?')){
-        axios.delete(`http://localhost:8080/api/posts/${this.id_param}`,
-        { id: this.id },
-        {
-          headers: {
-            'content-type': 'application/json',
-            'Authorization': 'Bearer ' + token
-          }
-        })
-        .then(()=> {
-          alert('le message a bien été supprimé !')
-        })
-       } 
-      },
+      // DeletePost: function() {
+      //   let token =localStorage.getItem('token')
+      //   if(confirm('Voulez vous vraiment supprimer le message ?')){
+      //   axios.delete('http://localhost:8080/posts/delete',
+      //   {
+      //     headers: {
+      //       'content-type': 'application/json',
+      //       'Authorization': 'Bearer ' + token
+      //     }
+      //   })
+      //   .then(()=> {
+      //     alert('le message a bien été supprimé !')
+      //   })
+      //  } 
+      // },
 
      
 

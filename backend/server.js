@@ -31,7 +31,7 @@ server.get('/', function (req,res) {
     res.sendFile(path + "index.html");
   });
 
-server.use('/api/', apiRouter);
+server.use('/', apiRouter);
 
 // Launch server
 server.listen(8080, function() {

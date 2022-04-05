@@ -50,7 +50,7 @@
             
             <!-- <img  width="45" :src="post.media" > -->
              <div class="form-group">
-               <img :src=" 'C:Users/sandr/Projets/P7/backend/images/' + post.media  "/>
+               <img :src=" 'http://localhost:8080/backend/images/' + post.media  " alt= "image du post " />
              </div>
             <p class='id'>{{post.id}}</p>
               
